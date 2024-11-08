@@ -5,9 +5,9 @@ import os
 pygame.init()
 
 
-ANCHO_PANTALLA = 1280
-ALTO_PANTALLA = 960
-TAMANIO_TILE = 32
+ANCHO_PANTALLA = 1360
+ALTO_PANTALLA = 1020
+TAMANIO_TILE = 34
 TILES_HORIZONTAL = ANCHO_PANTALLA // TAMANIO_TILE  # 20 tiles
 TILES_VERTICAL = ALTO_PANTALLA // TAMANIO_TILE  # 15 tiles
 pantalla = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
@@ -79,7 +79,7 @@ mapa = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
@@ -99,15 +99,25 @@ def renderizar_mapa(mapa):
                 pantalla.blit(tiles_mapa[tile - 1], (col_idx * TAMANIO_TILE, fila_idx * TAMANIO_TILE))
 
 
-def comprobar_colision(mapa, pos_x, pos_y):
+def comprobar_colision(mapa, pos_x, pos_y, moviendo_izquierda=False, moviendo_derecha=False, vel_y=0):
     jugador_rect = pygame.Rect(pos_x, pos_y, TAMANIO_TILE, TAMANIO_TILE)
-    for fila_idx, fila in enumerate(mapa):
-        for col_idx, tile in enumerate(fila):
-            if tile != 0:  # Si no es una tile vacía, es sólida
-                tile_rect = pygame.Rect(col_idx * TAMANIO_TILE, fila_idx * TAMANIO_TILE, TAMANIO_TILE, TAMANIO_TILE)
+    for fila in range(len(mapa)):
+        for columna in range(len(mapa[0])):
+            if mapa[fila][columna] != 0:  # Si la tile no es vacía, es sólida
+                tile_rect = pygame.Rect(columna * TAMANIO_TILE, fila * TAMANIO_TILE, TAMANIO_TILE, TAMANIO_TILE)
                 if jugador_rect.colliderect(tile_rect):
-                    return tile_rect
-    return None
+                    # Lógica de colisión dependiendo del movimiento
+                    if moviendo_derecha:  # Moviéndose a la derecha
+                        jugador_rect.right = tile_rect.left
+                    elif moviendo_izquierda:  # Moviéndose a la izquierda
+                        jugador_rect.left = tile_rect.right
+                    elif vel_y > 0:  # Cayendo
+                        jugador_rect.bottom = tile_rect.top
+                    elif vel_y < 0:  # Saltando
+                        jugador_rect.top = tile_rect.bottom
+                        vel_y = 0  # Detiene el salto en caso de colisión superior
+                    return tile_rect  # Devuelve el rectángulo de la colisión
+    return None  # No se encontró colisión
 
 
 jugando = True
