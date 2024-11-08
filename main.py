@@ -5,9 +5,10 @@ import os
 pygame.init()
 
 
-ANCHO_PANTALLA = 1360
-ALTO_PANTALLA = 1020
-TAMANIO_TILE = 34
+ANCHO_PANTALLA = 1200
+ALTO_PANTALLA = 900
+TAMANIO_TILE = 30
+TAMANIO_TILE_JUGADOR = 30
 TILES_HORIZONTAL = ANCHO_PANTALLA // TAMANIO_TILE  # 20 tiles
 TILES_VERTICAL = ALTO_PANTALLA // TAMANIO_TILE  # 15 tiles
 pantalla = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
@@ -15,11 +16,11 @@ pygame.display.set_caption('Juego de Plataforma con Colisiones Detalladas')
 
 
 BLANCO = (255, 255, 255)
-FONDO = pygame.image.load('assets/tiles/3.png').convert() # SE usa esa imagen para el fondo de pantalla
+FONDO = pygame.image.load('assets/tiles/fondo.png').convert() # SE usa esa imagen para el fondo de pantalla
 FONDO = pygame.transform.scale(FONDO, (ANCHO_PANTALLA, ALTO_PANTALLA))
 
 
-VELOCIDAD_JUGADOR = 5
+VELOCIDAD_JUGADOR = 6
 GRAVEDAD = 1
 FUERZA_SALTO = -10
 
@@ -28,7 +29,7 @@ def cargar_sprites(ruta, cantidad):
     imagenes = []
     for i in range(cantidad):
         imagen = pygame.image.load(os.path.join(ruta, f'{i}.png')).convert_alpha()
-        imagen = pygame.transform.scale(imagen, (TAMANIO_TILE, TAMANIO_TILE))
+        imagen = pygame.transform.scale(imagen, (TAMANIO_TILE_JUGADOR, TAMANIO_TILE_JUGADOR))
         imagenes.append(imagen)
     return imagenes
 
@@ -51,46 +52,53 @@ tiles_mapa = cargar_tiles('assets/tiles')
 
 
 mapa = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0]*2,
+    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0]*2,
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]*2
 ]
 
 
 pos_x = TAMANIO_TILE  # Posición inicial en X
-pos_y = ALTO_PANTALLA - 2 * TAMANIO_TILE  # Posición inicial en Y (un poco por encima del piso)
+pos_y = ALTO_PANTALLA - 2 * TAMANIO_TILE # Posición inicial en Y (un poco por encima del piso)
 vel_y = 0
 saltando = False
 indice_sprite = 0
 reloj = pygame.time.Clock()
 
+
+def dibujar_colisiones(mapa, pantalla):
+    for fila_idx, fila in enumerate(mapa):
+        for col_idx, tile in enumerate(fila):
+            if tile != 0:  # Dibuja solo las tiles sólidas
+                tile_rect = pygame.Rect(col_idx * TAMANIO_TILE, fila_idx * TAMANIO_TILE, TAMANIO_TILE, TAMANIO_TILE)
+                pygame.draw.rect(pantalla, (255, 0, 0), tile_rect, 1)  # Rectángulo rojo para tiles sólidas
 
 def renderizar_mapa(mapa):
     for fila_idx, fila in enumerate(mapa):
@@ -100,7 +108,7 @@ def renderizar_mapa(mapa):
 
 
 def comprobar_colision(mapa, pos_x, pos_y, moviendo_izquierda=False, moviendo_derecha=False, vel_y=0):
-    jugador_rect = pygame.Rect(pos_x, pos_y, TAMANIO_TILE, TAMANIO_TILE)
+    jugador_rect = pygame.Rect(pos_x, pos_y, TAMANIO_TILE_JUGADOR, TAMANIO_TILE_JUGADOR)
     for fila in range(len(mapa)):
         for columna in range(len(mapa[0])):
             if mapa[fila][columna] != 0:  # Si la tile no es vacía, es sólida
@@ -127,7 +135,8 @@ while jugando:
     
     renderizar_mapa(mapa)
 
-    
+    dibujar_colisiones(mapa, pantalla)
+
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             jugando = False
@@ -165,7 +174,7 @@ while jugando:
     colision_tile = comprobar_colision(mapa, pos_x, nueva_pos_y)
     if colision_tile:
         
-        if vel_y > 0 and pos_y + TAMANIO_TILE <= colision_tile.top:
+        if vel_y > 0 and pos_y + TAMANIO_TILE_JUGADOR <= colision_tile.top:
             pos_y = colision_tile.top - TAMANIO_TILE
             vel_y = 0
             saltando = False
