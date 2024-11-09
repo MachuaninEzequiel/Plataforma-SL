@@ -1,2 +1,2 @@
 # Plataforma-SL
- Juego plataformas con scroll lateral
+ Juego plataformas con scroll vertical
